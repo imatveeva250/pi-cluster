@@ -22,7 +22,7 @@ spec:
           image: sissbruecker/linkding:1.31.0
           envFrom:
             - secretRef:
-              name: linkding-secrets
+                name: linkding-secrets
           ports:
             - containerPort: 9090
 
