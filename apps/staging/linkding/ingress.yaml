@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: lds.matveeva.dev
+    - host: veneticapi.tail184043.ts.net
       http:
         paths:
           - backend:
