@@ -28,3 +28,14 @@ spec:
   values:
     grafana:
       adminPassword: "15072011"
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+
+        hosts:
+          - grs.matveeva.dev
+
+        tls:
+          - secretName: grafana-tls-secret
+            hosts:
+              - grs.matveeva.dev
