@@ -27,7 +27,9 @@ spec:
           kind: PrometheusRule
   values:
     grafana:
-      adminPassword: "15072011"
+      admin:
+        existingSecret: grafana-secret
+        passwordKey: admin-password
       ingress:
         enabled: true
         ingressClassName: tailscale
