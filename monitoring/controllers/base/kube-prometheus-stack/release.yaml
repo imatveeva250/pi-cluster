@@ -34,8 +34,8 @@ spec:
         hosts:
           - grafana
         tls:
-          -hosts:
-            - grafana
+          - hosts:
+              - grafana
       grafana.ini:
         server:
           domain: grafana.tail184043.ts.net
