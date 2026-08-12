@@ -30,12 +30,13 @@ spec:
       adminPassword: "15072011"
       ingress:
         enabled: true
-        ingressClassName: traefik
-
+        ingressClassName: tailscale
         hosts:
-          - grs.matveeva.dev
-
+          - grafana
         tls:
-          - secretName: grafana-tls-secret
-            hosts:
-              - grs.matveeva.dev
+          -hosts:
+            - grafana
+      grafana.ini:
+        server:
+          domain: grafana.tail184043.ts.net
+          root_url: "https://grafana.tail184043.ts.net"
