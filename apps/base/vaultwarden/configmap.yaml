@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vaultwarden-configmap
+data:
+  ROCKET_PORT: "8080"
+  DOMAIN: "https://vaultwarden.tail184043.ts.net"
