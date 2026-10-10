@@ -79,3 +79,4 @@ data:
     ingress:
     - hostname: abspi.matveeva.dev
       service: http://audiobookshelf:3005
+    - service: http_status:404
