@@ -17,6 +17,23 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
 
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /data/config /data/metadata /data/audiobooks
+              chown -R 1000:1000 /data/config /data/metadata
+              chown 1000:1000 /data/audiobooks
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          volumeMounts:
+            - name: audiobookshelf-data
+              mountPath: /data
+
       containers:
         - name: audiobookshelf
           image: ghcr.io/advplyr/audiobookshelf:2.37.1
