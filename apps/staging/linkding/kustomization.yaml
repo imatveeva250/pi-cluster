@@ -4,6 +4,6 @@ namespace: linkding
 resources:
   - ../../base/linkding
   # - cloudflare.yaml
-  - tunnel-credentials.yaml
-  - linkding-secrets.yaml
+  - tunnel-credentials.sops.yaml
+  - linkding-secrets.sops.yaml
   - ingress.yaml
