@@ -26,8 +26,8 @@ spec:
             - sh
             - -c
             - |
-              mkdir -p /pvc/data /pvc/config
-              chown -R 1000:1000 /pvc/data /pvc/config
+              mkdir -p /pvc/data 
+              chown -R 1000:1000 /pvc/data
           securityContext:
             runAsUser: 0
             runAsGroup: 0
@@ -73,9 +73,6 @@ spec:
             - name: forgejo-data
               mountPath: /var/lib/gitea
               subPath: data
-            - name: forgejo-data
-              mountPath: /etc/gitea
-              subPath: config
 
       volumes:
         - name: forgejo-data
