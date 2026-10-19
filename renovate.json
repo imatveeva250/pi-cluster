@@ -4,6 +4,11 @@
     "fileMatch": [
       "\\.yaml$"
     ]
-  }
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["codeberg.org/forgejo/forgejo"],
+      "allowedVersions": "/^15\\./"
+    }
+  ]
 }
-
