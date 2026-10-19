@@ -30,7 +30,7 @@ January 2027. 15.0 LTS is supported until July 2027.
 
 **Alternative considered:** 17 (latest). Rejected for the reasons above; its new features
 are not needed for a personal git server.
-
+:
 ### 2. Access: Tailscale only, no public tunnel
 
 Forgejo is reachable only from devices on the tailnet, through the Tailscale Kubernetes
@@ -39,8 +39,9 @@ operator (same pattern as Vaultwarden).
 - A public login page attracts automated brute-force and spam sign-ups within days.
 - A public instance must be patched immediately on every security release. Behind
   Tailscale, patching is still required, but not an emergency.
-- Git over SSH works normally over the tailnet. Through a Cloudflare tunnel, every client
-  would need `cloudflared` configured.
+- Git over HTTPS works from any tailnet device without extra client setup. Through a
+  Cloudflare tunnel, SSH would need cloudflared on every client. SSH is disabled for now
+  (`DISABLE_SSH`); if it is enabled later, it stays tailnet-only.
 - An in-cluster CI runner reaches Forgejo through its Kubernetes Service, so CI does not
   depend on public access.
 - Visibility for others is not lost: the public portfolio lives on GitHub, and Forgejo can
@@ -54,7 +55,8 @@ nothing is visible without logging in.
 
 The `rootless` image runs as UID 1000 instead of starting as root.
 
-- Matches the non-root policy applied to all pods in this cluster.
+- Only the `fix-permissions` initContainer runs as root, and only to create and chown the
+  data directory. The Forgejo container itself never runs as root.
 - Volume ownership is handled by an initContainer, the same pattern used for
   Audiobookshelf, because `fsGroup` has no effect on k3s `local-path` (hostPath) volumes.
 
@@ -68,9 +70,32 @@ The `rootless` image runs as UID 1000 instead of starting as root.
 **Trade-off:** SQLite rules out running more than one Forgejo replica. Acceptable while
 the cluster has one node; revisit if that changes.
 
+### 5. Storage: one PVC, config on the data subPath
+
+Forgejo uses one PVC, `forgejo-data-pvc`, mounted once with `subPath: data` at
+`/var/lib/gitea`.
+
+- The rootless image sets `GITEA_WORK_DIR=/var/lib/gitea`,
+  `GITEA_CUSTOM=/var/lib/gitea/custom` and
+  `GITEA_APP_INI=/var/lib/gitea/custom/conf/app.ini`. Repositories, the SQLite database
+  and `app.ini` therefore all live under one mount.
+- On first start, the entrypoint renders `/etc/templates/app.ini` (part of the image)
+  together with the `FORGEJO__section__KEY` variables into `app.ini`. This includes
+  generated secrets such as `SECRET_KEY`. Losing the file would invalidate them, so it
+  must be on the PVC.
+- Verified by deleting the pod: the SHA-256 of `app.ini` was identical before and after
+  the pod was recreated, and its modification time did not change.
+- On the node, UID 1000 is the login user. That user can read Forgejo's data, including
+  `app.ini`, without sudo. Acceptable on a single-user node.
+
+Alternative considered: a second subPath, `config`, mounted at `/etc/gitea`, as in older
+Gitea and Forgejo examples. Removed: this image never writes there, so the mount was
+unused and pointed to a config location that does not exist.
+
 ## Consequences
 
 - Forgejo is not reachable from the internet.
 - One planned major upgrade per year, documented in a runbook.
 - Resource requests and limits are set from the first deployment and tuned from Grafana
   data afterwards.
+- Backing up the `data` directory covers repositories, database and configuration.
