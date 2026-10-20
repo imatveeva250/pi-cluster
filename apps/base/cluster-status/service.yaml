@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-status
+spec:
+  type: ClusterIP
+  selector:
+    app: cluster-status
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
