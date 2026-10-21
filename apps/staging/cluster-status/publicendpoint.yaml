@@ -1,0 +1,6 @@
+apiVersion: homelab.matveeva.dev/v1alpha1
+kind: PublicEndpoint
+metadata:
+  name: status-page
+spec:
+  url: https://status.matveeva.dev/healthz

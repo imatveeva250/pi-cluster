@@ -1,0 +1,6 @@
+apiVersion: homelab.matveeva.dev/v1alpha1
+kind: PublicEndpoint
+metadata:
+  name: abspi
+spec:
+  url: https://abspi.matveeva.dev
