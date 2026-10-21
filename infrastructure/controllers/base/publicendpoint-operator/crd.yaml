@@ -33,31 +33,41 @@ spec:
       schema:
         openAPIV3Schema:
           type: object
+          description: A public HTTPS URL that the PublicEndpoint operator checks on a schedule.
           properties:
             spec:
               type: object
+              description: The endpoint to check and how often.
               required:
                 - url
               properties:
                 url:
                   type: string
                   pattern: "^https://"
+                  description: Full HTTPS URL to request, for example https://status.matveeva.dev/healthz. Only https URLs are accepted.
                 intervalSeconds:
                   type: integer
                   minimum: 30
                   maximum: 3600
                   default: 60
+                  description: Seconds between checks, from 30 to 3600. Defaults to 60.
             status:
               type: object
+              description: Result of the most recent check, written by the operator.
               properties:
                 reachable:
                   type: boolean
+                  description: True if the last request returned a status code below 400.
                 httpStatus:
                   type: integer
+                  description: HTTP status code of the last request. Not set if the request failed before a response arrived.
                 latencyMs:
                   type: integer
+                  description: Time until the response arrived, in milliseconds.
                 lastChecked:
                   type: string
                   format: date-time
+                  description: When the last check ran, in UTC.
                 message:
                   type: string
+                  description: Error detail when the endpoint was not reachable, such as a timeout or DNS failure.
