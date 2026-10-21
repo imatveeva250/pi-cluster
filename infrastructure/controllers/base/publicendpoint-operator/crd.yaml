@@ -1,0 +1,63 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: publicendpoints.homelab.matveeva.dev
+spec:
+  group: homelab.matveeva.dev
+  scope: Namespaced
+  names:
+    kind: PublicEndpoint
+    plural: publicendpoints
+    singular: publicendpoint
+    shortNames:
+      - pe
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: URL
+          type: string
+          jsonPath: .spec.url
+        - name: Reachable
+          type: boolean
+          jsonPath: .status.reachable
+        - name: Latency
+          type: integer
+          jsonPath: .status.latencyMs
+        - name: Checked
+          type: date
+          jsonPath: .status.lastChecked
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  pattern: "^https://"
+                intervalSeconds:
+                  type: integer
+                  minimum: 30
+                  maximum: 3600
+                  default: 60
+            status:
+              type: object
+              properties:
+                reachable:
+                  type: boolean
+                httpStatus:
+                  type: integer
+                latencyMs:
+                  type: integer
+                lastChecked:
+                  type: string
+                  format: date-time
+                message:
+                  type: string
