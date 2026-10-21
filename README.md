@@ -19,3 +19,4 @@ encrypted in the repo with SOPS and age.
 | # | Decision | Summary |
 |---|---|---|
 | [0001](docs/decisions/0001-forgejo-setup.md) | Forgejo setup | 15 LTS, Tailscale only, rootless image, SQLite |
+| [0002](docs/decisions/0002-cluster-status.md) | Cluster status page | Own app, fixed Prometheus queries, arm64 image via GitHub Actions, public through its own tunnel |
