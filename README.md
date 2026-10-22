@@ -13,6 +13,7 @@ encrypted in the repo with SOPS and age.
 | `infrastructure/controllers` | Cluster-wide controllers (Renovate) |
 | `monitoring` | kube-prometheus-stack (Prometheus, Grafana, Alertmanager) |
 | `docs/decisions` | Architecture decision records |
+| `docs/postmortems` | Incident write-ups |
 
 ## Decisions
 
