@@ -27,3 +27,4 @@ encrypted in the repo with SOPS and age.
 | Date | Incident |
 |---|---|
 | [2026-10-22](docs/postmortems/2026-10-22-renovate-images.md) | Node disk filled by unpinned Renovate images |
+| [2026-10-22](docs/postmortems/2026-10-22-grafana-stuck-rollout.md) | Grafana rollout stuck for 71 days on a missing Secret key |
