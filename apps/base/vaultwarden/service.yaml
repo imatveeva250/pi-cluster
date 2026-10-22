@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: vaultwarden
 spec:
-  ports:
-    - port: 80
-      targetPort: 8080
+  type: ClusterIP
   selector:
     app: vaultwarden
-  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

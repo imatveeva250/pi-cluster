@@ -9,7 +9,7 @@ spec:
     service:
       name: vaultwarden
       port:
-        number: 80
+        name: http
   tls:
     - hosts:
         - vaultwarden

@@ -15,7 +15,7 @@ spec:
         app: vaultwarden
     spec:
       securityContext:
-        fsGroup: 1000
+        runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
 
@@ -26,10 +26,35 @@ spec:
             - configMapRef:
                 name: vaultwarden-configmap
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
+
+          readinessProbe:
+            httpGet:
+              path: /alive
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /alive
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
 
           securityContext:
             allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
           volumeMounts:
             - name: vaultwarden-data
