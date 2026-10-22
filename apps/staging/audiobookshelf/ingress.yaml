@@ -9,7 +9,7 @@ spec:
     service:
       name: audiobookshelf
       port:
-        number: 3005
+        name: http
   tls:
     - hosts:
         - audiobookshelf

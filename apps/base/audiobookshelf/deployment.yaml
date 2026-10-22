@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: audiobookshelf
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -13,7 +15,7 @@ spec:
         app: audiobookshelf
     spec:
       securityContext:
-        fsGroup: 1000
+        runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
 
@@ -28,6 +30,7 @@ spec:
               chown -R 1000:1000 /data/config /data/metadata
               chown 1000:1000 /data/audiobooks
           securityContext:
+            runAsNonRoot: false
             runAsUser: 0
             runAsGroup: 0
           volumeMounts:
@@ -41,10 +44,35 @@ spec:
             - configMapRef:
                 name: audiobookshelf-configmap
           ports:
-            - containerPort: 3005
+            - name: http
+              containerPort: 3005
+
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
 
           securityContext:
             allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
           volumeMounts:
             - name: audiobookshelf-data

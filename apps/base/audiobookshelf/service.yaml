@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: audiobookshelf
 spec:
-  ports:
-    - port: 3005
-      targetPort: 3005
+  type: ClusterIP
   selector:
     app: audiobookshelf
-  type: ClusterIP
+  ports:
+    - name: http
+      port: 3005
+      targetPort: http
