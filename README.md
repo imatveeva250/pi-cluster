@@ -10,8 +10,7 @@ encrypted in the repo with SOPS and age.
 | `clusters/staging` | Flux Kustomizations, entry point for the cluster |
 | `apps/base` | Base manifests per app |
 | `apps/staging` | Staging overlays: ingress, secrets, environment-specific settings |
-| `infrastructure/controllers` | Cluster-wide controllers (Renovate) |
-| `monitoring` | kube-prometheus-stack (Prometheus, Grafana, Alertmanager) |
+| `infrastructure/controllers` | Cluster-wide controllers (Renovate, PublicEndpoint operator) | | `monitoring` | kube-prometheus-stack (Prometheus, Grafana, Alertmanager) |
 | `docs/decisions` | Architecture decision records |
 | `docs/postmortems` | Incident write-ups |
 
