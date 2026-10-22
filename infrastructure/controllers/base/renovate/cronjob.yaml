@@ -6,7 +6,7 @@ metadata:
 spec:
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
-  schedule: "@hourly"
+  schedule: "0 */6 * * *"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
@@ -16,6 +16,12 @@ spec:
           containers:
             - name: renovate
               image: renovate/renovate:44.176.2
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 256Mi
+                limits:
+                  memory: 1Gi
               args:
                 - imatveeva250/pi-cluster
 
