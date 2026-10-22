@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: publicendpoint-operator
+  labels:
+    app: publicendpoint-operator
+spec:
+  selector:
+    app: publicendpoint-operator
+  ports:
+    - name: metrics
+      port: 8000
+      targetPort: metrics

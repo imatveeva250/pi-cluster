@@ -22,10 +22,12 @@ spec:
 
       containers:
         - name: operator
-          image: ghcr.io/imatveeva250/publicendpoint-operator:0.1.1
+          image: ghcr.io/imatveeva250/publicendpoint-operator:0.2.0
           ports:
             - name: health
               containerPort: 8080
+            - name: metrics
+              containerPort: 8000
 
           livenessProbe:
             httpGet:
