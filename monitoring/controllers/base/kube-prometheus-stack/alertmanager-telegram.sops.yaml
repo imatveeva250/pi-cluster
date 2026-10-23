@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: alertmanager-telegram
+    namespace: monitoring
+type: Opaque
+stringData:
+    bot-token: ENC[AES256_GCM,data:OAsMEoZEe7o7Ie6giksteIHBzYf/4ZzM7ii7oDPEuCjiSuPnb1lGQkCN5a/Bzg==,iv:pTK5nh+spdw3qGqDeshFIDs6p1ZYEF014OwF+vbpeOc=,tag:FxlXjrec47D55/0bqOPqJw==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB4Q3pNU3V4c2h4WWRMVDdJ
+            eE4zZWJnV2R2MG5CZUEwY2svMlowODF2WDI4CjdldzJkMVFFRk8ydGlvOVplNlI2
+            QVhublNmanlCTFlUeHlhZU5BM01NcjQKLS0tIHFEWnRrWWRhNVQ2ekZwUW9GcG9u
+            RGZ4Y0krZktxOFdMODZyZTZxemxJTGMKMGTe2o7s4uU48rr889toQlMAkIwROM6y
+            9SMxTiL2mDy9+d3+Es6PiwhVzrLChRtiqwGj4C/Jj3q8eB/wYuiEtQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1y04aa748ugxwr0jlcygt56rts7h8escdjed8cpa346ru4utugpzsya5cph
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-10-23T02:27:20Z"
+    mac: ENC[AES256_GCM,data:+VY/sDhCk6rd4l6uhxtk6AwUU2anL36URMt7/LED7+zcpdiwXLxK+hWtPEPNpRNdk0RPjS/oFaqweZ9Ve2kAUN+NOtJKvh3DUXXbAw7DG+Pr9eDo24MpT4C81qgsPIh/+E4gzsNUMe+gnlbdo4gixLj8fDYmogFYuiljjcSaYFE=,iv:XrMtlDZ1DNrs8BYLAMiSiVBvhSs03qjv6Q++coAfku8=,tag:AxLTl9QTDRwPgXiHyaqtdA==,type:str]
+    version: 3.13.3

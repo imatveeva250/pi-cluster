@@ -43,3 +43,36 @@ spec:
         server:
           domain: grafana.tail184043.ts.net
           root_url: "https://grafana.tail184043.ts.net"
+    alertmanager:
+      alertmanagerSpec:
+        secrets:
+          - alertmanager-telegram
+      config:
+        route:
+          receiver: telegram
+          group_by: ["alertname", "namespace"]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 4h
+          routes:
+            - receiver: "null"
+              matchers:
+                - alertname = "Watchdog"
+            - receiver: "null"
+              matchers:
+                - alertname = "InfoInhibitor"
+        receivers:
+          - name: "null"
+          - name: telegram
+            telegram_configs:
+              - bot_token_file: /etc/alertmanager/secrets/alertmanager-telegram/bot-token
+                chat_id: 2032683559
+                send_resolved: true
+    kubeControllerManager:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+    kubeProxy:
+      enabled: false
+    kubeEtcd:
+      enabled: false

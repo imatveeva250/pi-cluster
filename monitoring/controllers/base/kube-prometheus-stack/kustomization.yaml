@@ -5,3 +5,4 @@ resources:
   - repository.yaml
   - release.yaml
   - grafana-secret.sops.yaml
+  - alertmanager-telegram.sops.yaml
