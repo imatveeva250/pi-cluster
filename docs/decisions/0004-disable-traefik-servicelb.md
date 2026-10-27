@@ -29,3 +29,4 @@ All k3s settings live in this file, not in systemd unit flags, so a reinstall wi
 - `--disable=helm-controller` had been set as a unit flag and was a no-op: `disable` only accepts packaged components. The real switch is `disable-helm-controller`.
 - Removal order matters. With both disabled in one restart, ServiceLB stopped before it could remove its `service.kubernetes.io/load-balancer-cleanup` finalizer from Traefik's Service, so `helm uninstall --wait` hung until the finalizer was removed by hand. On a fresh install this does not apply, because the components are never deployed.
 - A host-level `tailscale serve` entry (`veneticapi.tail184043.ts.net` to Traefik's NodePort 30866), left from before the Tailscale operator, was removed with it.
+- Four days later (2026-10-27): 1046Mi available, swap 342Mi.
