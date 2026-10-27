@@ -23,6 +23,7 @@ encrypted in the repo with SOPS and age.
 | [0003](docs/decisions/0003-publicendpoint-operator.md) | PublicEndpoint operator | Own CRD and kopf operator, scoped RBAC, endpoints declared per app |
 | [0004](docs/decisions/0004-disable-traefik-servicelb.md) | Disable Traefik, ServiceLB and the k3s Helm controller |
 | [0005](docs/decisions/0005-alerting-telegram.md) | Alert delivery through Telegram |
+| [0006](docs/decisions/0006-flux-alerts-kube-state-metrics.md) | Flux resource alerts through kube-state-metrics |
 
 ## Postmortems
 
