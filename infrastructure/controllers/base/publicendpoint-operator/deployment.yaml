@@ -35,6 +35,7 @@ spec:
               port: health
             initialDelaySeconds: 15
             periodSeconds: 30
+            timeoutSeconds: 3
             failureThreshold: 3
 
           resources:
