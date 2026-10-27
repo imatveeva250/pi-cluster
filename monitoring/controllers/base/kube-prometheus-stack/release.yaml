@@ -24,6 +24,10 @@ spec:
       - paths: ["/metadata/annotations/prometheus-operator-validated"]
         target:
           kind: PrometheusRule
+  valuesFrom:
+    - kind: ConfigMap
+      name: kube-state-metrics-flux-values
+      valuesKey: values.yaml
   values:
     grafana:
       admin:

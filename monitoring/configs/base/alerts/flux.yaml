@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: flux
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: flux
+      rules:
+        - alert: FluxResourceNotReady
+          expr: gotk_resource_info{ready!="True", suspended!="true"} == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Flux {{ $labels.customresource_kind }} {{ $labels.exported_namespace }}/{{ $labels.name }} is not Ready"
+            description: "Not Ready for 15 minutes. Check with: flux get all -n {{ $labels.exported_namespace }} and flux events -n {{ $labels.exported_namespace }}"

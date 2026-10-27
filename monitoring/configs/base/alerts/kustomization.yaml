@@ -4,3 +4,4 @@ resources:
   - node.yaml
   - public-endpoints.yaml
   - workloads.yaml
+  - flux.yaml

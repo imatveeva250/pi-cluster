@@ -7,3 +7,9 @@ resources:
   - grafana-secret.sops.yaml
   - alertmanager-telegram.sops.yaml
   - alertmanager-healthchecks.sops.yaml
+configMapGenerator:
+  - name: kube-state-metrics-flux-values
+    files:
+      - values.yaml=kube-state-metrics-flux.yaml
+configurations:
+  - kustomizeconfig.yaml

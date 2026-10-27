@@ -1,0 +1,61 @@
+# Flux resource state for kube-state-metrics.
+# Loaded into the kube-prometheus-stack HelmRelease through valuesFrom;
+# spec.values in release.yaml is merged on top.
+kube-state-metrics:
+  rbac:
+    extraRules:
+      - apiGroups:
+          - kustomize.toolkit.fluxcd.io
+          - helm.toolkit.fluxcd.io
+          - source.toolkit.fluxcd.io
+        resources:
+          - kustomizations
+          - helmreleases
+          - gitrepositories
+          - helmrepositories
+        verbs: ["list", "watch"]
+      - apiGroups:
+          - apiextensions.k8s.io
+        resources:
+          - customresourcedefinitions
+        verbs: ["list", "watch"]
+  customResourceState:
+    enabled: true
+    config:
+      spec:
+        resources:
+          - groupVersionKind:
+              group: kustomize.toolkit.fluxcd.io
+              version: v1
+              kind: Kustomization
+            metricNamePrefix: gotk
+            metrics: &resource_info
+              - name: resource_info
+                help: "The current state of a Flux resource."
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      name: [metadata, name]
+                labelsFromPath:
+                  exported_namespace: [metadata, namespace]
+                  suspended: [spec, suspend]
+                  ready: [status, conditions, "[type=Ready]", status]
+          - groupVersionKind:
+              group: helm.toolkit.fluxcd.io
+              version: v2
+              kind: HelmRelease
+            metricNamePrefix: gotk
+            metrics: *resource_info
+          - groupVersionKind:
+              group: source.toolkit.fluxcd.io
+              version: v1
+              kind: GitRepository
+            metricNamePrefix: gotk
+            metrics: *resource_info
+          - groupVersionKind:
+              group: source.toolkit.fluxcd.io
+              version: v1
+              kind: HelmRepository
+            metricNamePrefix: gotk
+            metrics: *resource_info
