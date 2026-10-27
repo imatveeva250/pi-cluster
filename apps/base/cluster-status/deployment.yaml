@@ -36,14 +36,15 @@ spec:
               port: http
             initialDelaySeconds: 15
             periodSeconds: 30
+            timeoutSeconds: 3
             failureThreshold: 3
 
           resources:
             requests:
               cpu: 10m
-              memory: 64Mi
+              memory: 48Mi
             limits:
-              memory: 128Mi
+              memory: 96Mi
 
           securityContext:
             allowPrivilegeEscalation: false
