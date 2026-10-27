@@ -12,7 +12,6 @@ kube-state-metrics:
           - kustomizations
           - helmreleases
           - gitrepositories
-          - helmrepositories
         verbs: ["list", "watch"]
       - apiGroups:
           - apiextensions.k8s.io
@@ -51,11 +50,5 @@ kube-state-metrics:
               group: source.toolkit.fluxcd.io
               version: v1
               kind: GitRepository
-            metricNamePrefix: gotk
-            metrics: *resource_info
-          - groupVersionKind:
-              group: source.toolkit.fluxcd.io
-              version: v1
-              kind: HelmRepository
             metricNamePrefix: gotk
             metrics: *resource_info
