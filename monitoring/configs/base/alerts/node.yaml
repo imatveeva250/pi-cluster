@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-custom
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: node-custom
+      rules:
+        - alert: NodeSwapUsageHigh
+          expr: |
+            (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes)
+              / node_memory_SwapTotal_bytes > 0.40
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Swap use above 40% on {{ $labels.instance }}"
+            description: "Swap is {{ $value | humanizePercentage }} full. On this node, growing swap means memory pressure: check the top memory consumers."
+        - alert: NodeRootDiskAbove75Percent
+          expr: |
+            1 - node_filesystem_avail_bytes{mountpoint="/", fstype="ext4"}
+              / node_filesystem_size_bytes{mountpoint="/", fstype="ext4"} > 0.75
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Root disk above 75% on {{ $labels.instance }}"
+            description: "The root filesystem is {{ $value | humanizePercentage }} full. The kubelet only removes unused images above 85%; check the containerd image store and PVC sizes."

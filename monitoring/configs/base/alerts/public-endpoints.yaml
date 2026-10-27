@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: public-endpoints
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: public-endpoints
+      rules:
+        - alert: PublicEndpointDown
+          expr: publicendpoint_up == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Public endpoint {{ $labels.namespace }}/{{ $labels.name }} is unreachable"
+            description: "The PublicEndpoint check has failed for 5 minutes. Check the app, its cloudflared tunnel and Cloudflare. Details: kubectl get pe {{ $labels.name }} -n {{ $labels.namespace }}"
+        - alert: PublicEndpointCheckStale
+          expr: time() - publicendpoint_last_check_timestamp_seconds > 300
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "No recent check for {{ $labels.namespace }}/{{ $labels.name }}"
+            description: "The last check is more than 5 minutes old. The publicendpoint-operator may be stuck: check its pod and logs."

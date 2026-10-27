@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: workloads-custom
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: workloads-custom
+      rules:
+        - alert: ContainerRestarted
+          expr: increase(kube_pod_container_status_restarts_total[1h]) > 0
+          labels:
+            severity: warning
+          annotations:
+            summary: "Container {{ $labels.container }} in {{ $labels.namespace }}/{{ $labels.pod }} restarted"
+            description: "It restarted within the last hour. Check lastState.terminated.reason (OOMKilled, Error, or Completed for a clean exit, often a failed liveness probe) and kubectl logs --previous."
