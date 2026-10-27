@@ -21,7 +21,6 @@ spec:
   driftDetection:
     mode: enabled
     ignore:
-      # Ignore "validated" annotation which is not inserted during install
       - paths: ["/metadata/annotations/prometheus-operator-validated"]
         target:
           kind: PrometheusRule
@@ -43,11 +42,38 @@ spec:
         server:
           domain: grafana.tail184043.ts.net
           root_url: "https://grafana.tail184043.ts.net"
+      resources:
+        requests:
+          cpu: 20m
+          memory: 144Mi
+        limits:
+          memory: 320Mi
+      sidecar:
+        resources:
+          requests:
+            cpu: 5m
+            memory: 104Mi
+          limits:
+            memory: 160Mi
     alertmanager:
       alertmanagerSpec:
         secrets:
           - alertmanager-telegram
           - alertmanager-healthchecks
+        resources:
+          requests:
+            cpu: 5m
+            memory: 32Mi
+          limits:
+            memory: 96Mi
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: local-path
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 1Gi
       config:
         route:
           receiver: telegram
@@ -76,6 +102,52 @@ spec:
             webhook_configs:
               - url_file: /etc/alertmanager/secrets/alertmanager-healthchecks/ping-url
                 send_resolved: false
+    prometheus:
+      prometheusSpec:
+        retention: 10d
+        retentionSize: 5GB
+        resources:
+          requests:
+            cpu: 100m
+            memory: 640Mi
+          limits:
+            memory: 1Gi
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: local-path
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 8Gi
+    prometheusOperator:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 48Mi
+        limits:
+          memory: 128Mi
+      prometheusConfigReloader:
+        resources:
+          requests:
+            cpu: 5m
+            memory: 24Mi
+          limits:
+            memory: 64Mi
+    kube-state-metrics:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 32Mi
+        limits:
+          memory: 96Mi
+    prometheus-node-exporter:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 16Mi
+        limits:
+          memory: 64Mi
     kubeControllerManager:
       enabled: false
     kubeScheduler:
