@@ -24,7 +24,8 @@ spec:
                   memory: 1Gi
               args:
                 - imatveeva250/pi-cluster
-
+                - imatveeva250/cluster-status
+                - imatveeva250/publicendpoint-operator
               envFrom:
                 - secretRef:
                     name: renovate-container-env
