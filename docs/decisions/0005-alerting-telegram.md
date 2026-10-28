@@ -24,5 +24,5 @@ Alertmanager sends alerts to a Telegram bot.
 - Every default rule now reaches the phone. Before the change, the only firing alerts besides Watchdog were the three k3s false positives and a Renovate Job that had failed 66 days earlier.
 - A failed Job keeps `KubeJobFailed` firing until the Job is deleted. Deleting it after reading the failure is the acknowledgement.
 - Telegram is an external dependency: if it is down, alerts are not delivered. healthchecks.io covers the opposite case: when the cluster, the node or the network fails, the missing Watchdog pings raise an alert from outside. Tested by silencing Watchdog for 15 minutes.
-- Alertmanager keeps its notification log and silences in an emptyDir. A pod recreation forgets silences and sends still-active alerts again.
+- Alertmanager keeps its notification log and silences on a 1Gi local-path PVC (since 2026-10-27). Before that they lived in an emptyDir, and a pod recreation forgot silences and sent still-active alerts again.
 - Slack was the alternative. It needs a workspace, and the phone is the only destination.
