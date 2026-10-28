@@ -10,5 +10,9 @@
       "matchPackageNames": ["codeberg.org/forgejo/forgejo"],
       "allowedVersions": "/^15\\./"
     }
-  ]
+  ],
+  "dependencyDashboard": true,
+  "flux": {
+    "managerFilePatterns": ["/\\.ya?ml$/"]
+   }
 }
