@@ -1,0 +1,22 @@
+apiVersion: v1
+data:
+    values.yaml: ENC[AES256_GCM,data:9lWiZbmluLu3npooIRIINN8X7j67F+jfo3oOv+OltcXl6RZzU9hd82htl4AGFhQT5PbaeiitKWYP3ZA9ISH0vx8ppbxdHax//KueKH70hj66B2JkvFSy8B+iGugkIfFsyYJS22v4E++CccuUC1YAm80L12L6cJbGSf2DGtwJUfK26EwEA6a21j/Rl5SoxegoydbcwyiOgen1HXF0p9dd1Q==,iv:HtNjoQAG1QuSUXeQe9WifoeBGaqhV+GxvLerFD6RUSA=,tag:ta7qivce2GPpJHoFm8Gy5g==,type:str]
+kind: Secret
+metadata:
+    name: tailscale-operator-values
+    namespace: tailscale
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBrbFJ6UE5wK2NsYVpUTG5U
+            cS9DYlpIT0kyNC81Z3RIT3FwOHlrZmRYVmw0CmNwc01qcno5OWxTaExKeFFvam0x
+            YzlMb1pJT3M5MXY4RWI2TWpPOCt4UUEKLS0tIG05a1BKN3BQSStNMnd1RGpjNzhF
+            dE4ycU1wSVdiSUYyWGhCYVlFcXVmbDQKBQBBVHnLSWoOgTN6AwXgfSryNi/Ko9yw
+            BWpeMdPjnr89N1XvvNNoyupr4qhP+U1Fah3Bwo0St8woFU9n5dj9TQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1y04aa748ugxwr0jlcygt56rts7h8escdjed8cpa346ru4utugpzsya5cph
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-10-28T02:39:03Z"
+    mac: ENC[AES256_GCM,data:j/0msMVAb1Jbl4RJ8mh89FypCyl/AdM0lrt/oD4WaTz2jtfE051HL5eYN66p/ihzVQi9EzFN3pI0WbTDqBKYFiBf/qUDpIdcztNm5WrDVEprhrGI3O2KLWjLEqYp1/1Hnszkw6uLJALlvQr1eK1GoSX327cGnRVzbd+rnCfDFbc=,iv:IApLWxc5DYLM+xjK6NUEYCIfoHhDWadO8qhMf8YjFEQ=,tag:E5XN9eAFuf4Uk/y+EgFoPQ==,type:str]
+    version: 3.13.3
