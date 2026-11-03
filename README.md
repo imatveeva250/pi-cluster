@@ -112,19 +112,6 @@ Flux applies the tree as four Kustomizations, in dependency order:
 | `monitoring-controllers` | `monitoring/controllers/staging` | (waits until its HelmRelease is ready) |
 | `monitoring-configs` | `monitoring/configs/staging` | `monitoring-controllers` |
 
-## Bootstrap
-
-1. Install k3s with `/etc/rancher/k3s/config.yaml` disabling `traefik` and `servicelb` and
-   setting `disable-helm-controller: true` ([0004](docs/decisions/0004-disable-traefik-servicelb.md)).
-2. Create the age key Secret that Flux uses to decrypt:
-   `kubectl create namespace flux-system` and
-   `kubectl create secret generic sops-age -n flux-system --from-file=age.agekey=<path to the age key>`.
-   The key itself is never committed (`*.agekey` is in `.gitignore`).
-3. Bootstrap Flux against this repository with the path `clusters/staging`
-   (`flux bootstrap github --owner=imatveeva250 --repository=pi-cluster --branch=main --path=clusters/staging --personal`).
-4. Flux applies everything else. Tailscale proxies register new devices, so old devices with
-   the same names must be removed in the Tailscale admin console first, or the new ones get
-   suffixed names.
 
 ## Decisions
 
@@ -149,5 +136,5 @@ Flux applies the tree as four Kustomizations, in dependency order:
 
 | Advisory | Published | Affected here | Response | Status |
 |---|---|---|---|---|
-| eMudhra intermediate CA key compromise | 2026-10-20 | cloudflared (both tunnels); the node's CA store; images with their own CA store (cluster-status, publicendpoint-operator); Flux | cloudflared upgraded to 2026.10.2, then 2026.10.5; node `ca-certificates` updated | Partially mitigated: own images and Flux not yet updated |
+| eMudhra intermediate CA key compromise | 2026-10-20 | cloudflared (both tunnels); the node's CA store; images with their own CA store (cluster-status, publicendpoint-operator); Flux | cloudflared upgraded to 2026.10.2, then 2026.10.5; node `ca-certificates` updated; cluster-status and publicendpoint-operator rebuilt on a current Python base image; Flux upgraded to 2.10.0 (Go 1.27.3) | Mitigated |
 | Tailworm (Tailscale SSH and serve flaws, no upstream fix) | 2026-10-25 | Tailscale on the node and the operator proxies | Verified that Tailscale SSH is off on every node and proxy and that no serve forward points at a Unix socket; removed the default Tailscale SSH policy rule | Not exposed |
