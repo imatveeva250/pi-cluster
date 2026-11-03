@@ -1,7 +1,8 @@
-# PublicEndpoint operator
+# 0003: PublicEndpoint operator
 
-- Status: Accepted
-- Date: 2026-10-21
+## Status
+
+Accepted (2026-10-21)
 
 ## Context
 

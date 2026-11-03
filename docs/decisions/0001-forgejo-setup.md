@@ -1,7 +1,8 @@
-# Forgejo setup
+# 0001: Forgejo setup
 
-- **Status:** Accepted
-- **Date:** 2026-10-19
+## Status
+
+Accepted (2026-10-19)
 
 ## Context
 

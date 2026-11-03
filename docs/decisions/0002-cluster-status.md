@@ -1,7 +1,8 @@
-# Cluster status page
+# 0002: Cluster status page
 
-- Status: Accepted
-- Date: 2026-10-21
+## Status
+
+Accepted (2026-10-21)
 
 ## Context
 
