@@ -23,12 +23,13 @@ the Kubernetes API.
 
 ### 2. Fixed queries, aggregated numbers, short cache
 
-The backend runs five fixed PromQL queries and returns only aggregated numbers: memory, CPU
-and disk usage, running pods, and node uptime.
+The backend runs seven fixed PromQL queries and returns only aggregated numbers: memory, CPU
+and disk usage, running pods, node uptime, and how many public endpoints are up out of how
+many are checked (added in 0.2.0).
 
 - Visitors cannot send their own queries, so the public page cannot be used to read cluster
   internals or to load Prometheus with expensive queries.
-- Results are cached for 15 seconds. Prometheus receives at most five queries per 15 seconds,
+- Results are cached for 15 seconds. Prometheus receives at most seven queries per 15 seconds,
   regardless of traffic.
 - No pod names, namespaces or other identifiers are exposed.
 

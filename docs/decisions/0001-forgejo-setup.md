@@ -25,12 +25,12 @@ January 2027. 15.0 LTS is supported until July 2027.
   risk.
 - 15 LTS needs one planned major upgrade (to the next LTS) instead of two within six
   months.
-- Renovate is configured to propose only patch updates within the 15 line. Major
-  upgrades are done by hand, after a verified backup, following a runbook.
+- Renovate is configured to propose only updates within the 15 line. Major upgrades are
+  done by hand, after a verified backup.
 
 **Alternative considered:** 17 (latest). Rejected for the reasons above; its new features
 are not needed for a personal git server.
-:
+
 ### 2. Access: Tailscale only, no public tunnel
 
 Forgejo is reachable only from devices on the tailnet, through the Tailscale Kubernetes
@@ -95,7 +95,7 @@ unused and pointed to a config location that does not exist.
 ## Consequences
 
 - Forgejo is not reachable from the internet.
-- One planned major upgrade per year, documented in a runbook.
+- One planned major upgrade per year, done by hand.
 - Resource requests and limits are set from the first deployment and tuned from Grafana
   data afterwards.
 - Backing up the `data` directory covers repositories, database and configuration.

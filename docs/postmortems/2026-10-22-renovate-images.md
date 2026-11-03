@@ -33,16 +33,19 @@ The investigation, in order:
 - Removed unused images with `crictl --timeout 10m rmi --prune`. Disk usage dropped from
   90 GB to 68 GB (80% to 61%). The first attempt used the default client timeout of two
   seconds and reported errors, but containerd kept deleting in the background.
-- Pinned the image to an exact version. A pinned tag defaults to `IfNotPresent`, so hourly
-  runs reuse the image already on the node.
-- Added a Renovate rule that proposes updates to its own image once a week. The image on
-  the node now changes only when such an update is merged.
+- Pinned the image to an exact version. A pinned tag defaults to `IfNotPresent`, so
+  scheduled runs reuse the image already on the node.
+- Updates to Renovate's own image now arrive as Renovate pull requests, like any other
+  image. The image on the node changes only when such a pull request is merged.
+- Changed the schedule from every hour to every six hours, which also reduced memory
+  pressure on the node.
 
 ## Lessons
 
 - `latest` on a frequently scheduled workload is a disk leak, not only a reproducibility
   problem.
 - Disk usage was visible on the status page but nothing alerted on it. The growth was
-  noticed by looking, not by a signal.
+  noticed by looking, not by a signal. Since 2026-10-27, an alert fires when the root disk
+  passes 75%.
 - Measuring before acting mattered: the first suspect, Prometheus, accounted for under 4%
   of the used space.
