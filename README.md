@@ -1,14 +1,19 @@
 # pi-cluster
 
-A single-node Kubernetes (k3s) homelab on a Raspberry Pi with 4 GB of RAM, run the way a
-production cluster would be: everything comes from this repository through GitOps (Flux),
-secrets are encrypted in Git, alerts reach a phone, dependency updates arrive as reviewed
-pull requests, and every decision and incident is written down.
+My homelab: a single-node Kubernetes cluster (k3s) on a Raspberry Pi with 4 GB of RAM.
+Everything that runs on it comes from this repository through Flux. I try to run it the way
+I'd want a real cluster to be run: secrets encrypted in Git, alerts on my phone, updates as
+pull requests I actually review, and every decision and incident written down.
 
-Live: [status.matveeva.dev](https://status.matveeva.dev) shows the cluster's current numbers,
-served by an app from this repository.
+You can see it running at [status.matveeva.dev](https://status.matveeva.dev).
 
-## Architecture
+## How this started
+
+I started in July by deploying a few apps and breaking a lot of things along the way (the
+early commit history shows it). After a break I picked it up again in October with a
+different goal: run it properly and document everything that is happening with my cluster, with my explanation. This approach helped me to notice the same week how the node's disk was filled up with old images, and to find out that Grafana rollout had been stuck for 71 days without anyone noticing. That's why I decided to implement alerting and documentation, so I would be able to catch such issues early before they become problems.
+
+## How it fits together
 
 ```mermaid
 flowchart LR
@@ -45,65 +50,70 @@ flowchart LR
     hc -->|when the pings stop| telegram
 ```
 
-Nothing on the node listens on ports 80 or 443. Public apps are reached through outbound Cloudflare tunnels; private apps only from devices on
-the tailnet.
+Nothing on the node listens on ports 80 or 443. Public apps go out through Cloudflare
+tunnels, and private apps are only reachable from my own devices on the tailnet, through the
+Tailscale operator.
 
-## What runs here
+## What runs on it
 
-| App | Purpose | Access |
-|---|---|---|
-| cluster-status | Public page with live cluster numbers from Prometheus ([own code](https://github.com/imatveeva250/cluster-status)) | Public, Cloudflare tunnel |
-| audiobookshelf | Audiobook server | Public, Cloudflare tunnel; private, Tailscale |
-| Vaultwarden | Password manager | Private, Tailscale |
-| Forgejo | Git hosting | Private, Tailscale |
-| Grafana | Dashboards | Private, Tailscale |
+- cluster-status, the public status page. It's my own small app
+  ([repo](https://github.com/imatveeva250/cluster-status)) and only asks Prometheus for a few
+  fixed numbers.
+- audiobookshelf, an audiobook server. Public through a tunnel, and also on the tailnet.
+- Vaultwarden, my password manager. Tailnet only.
+- Forgejo, a Git server. Tailnet only. It's empty for now: I'm keeping it for running CI
+  inside the cluster later.
+- Grafana, for dashboards. Tailnet only.
 
-## Platform
+The platform underneath: k3s with Traefik, ServiceLB and its built-in Helm controller turned
+off ([0004](docs/decisions/0004-disable-traefik-servicelb.md)), Flux, SOPS with age for
+secrets, the Tailscale operator for private access
+([0007](docs/decisions/0007-tailscale-operator-flux.md)), cloudflared for public access,
+kube-prometheus-stack for monitoring, and Renovate for dependency updates.
 
-| Component | Role |
-|---|---|
-| k3s | Kubernetes distribution. Traefik, ServiceLB and the built-in Helm controller are disabled ([0004](docs/decisions/0004-disable-traefik-servicelb.md)) |
-| Flux | Applies this repository to the cluster and runs the Helm releases |
-| SOPS with age | Encrypts Secrets in Git; Flux decrypts them in the cluster |
-| Tailscale operator | Private access: one tailnet device per Tailscale Ingress ([0007](docs/decisions/0007-tailscale-operator-flux.md)) |
-| cloudflared | Public access: one Cloudflare tunnel per public app |
-| kube-prometheus-stack | Prometheus, Alertmanager, Grafana, the default alert rules and custom ones for the gaps |
-| PublicEndpoint operator | Own Kubernetes operator: a `PublicEndpoint` custom resource per public URL, checked from inside the cluster and exported as metrics ([own code](https://github.com/imatveeva250/publicendpoint-operator), [0003](docs/decisions/0003-publicendpoint-operator.md)) |
-| Renovate | Opens pull requests for new image tags and Helm chart versions |
+There's also the PublicEndpoint operator, which checks from inside the cluster that my
+public URLs work from the outside. I wrote it mostly to learn how operators work (custom
+resources, a reconcile loop, scoped RBAC); the blackbox exporter would do the same job.
+More about that in [its repo](https://github.com/imatveeva250/publicendpoint-operator) and
+[0003](docs/decisions/0003-publicendpoint-operator.md).
 
-## How it is operated
+## How I run it
 
-- **Git is the only way in.** Changes are commits; Flux applies them within a minute and prunes
-  what was removed. `helm list -A` and `flux get helmreleases -A` show the same releases:
-  nothing is installed by hand.
-- **Every app has probes and memory limits**, and the monitoring stack has memory limits,
-  sized from at least seven days of Prometheus data. There are no CPU limits on purpose. Memory is the bottleneck on this node.
-- **Alerts reach a phone.** Alertmanager sends to a Telegram bot, with repeats while an alert
-  lasts and a message when it resolves ([0005](docs/decisions/0005-alerting-telegram.md)).
-  A dead man's switch on healthchecks.io raises an alert from outside when the cluster stops
-  reporting. Flux objects that stop being Ready alert too
-  ([0006](docs/decisions/0006-flux-alerts-kube-state-metrics.md)).
-- **Dependency updates are reviewed, not just merged.** Renovate proposes them; Helm chart
-  upgrades are checked by rendering the old and new chart with the release's own values and
-  diffing the result before merging.
-- **Decisions and incidents are documented**: architecture decision records, postmortems, and
-  a table of security advisories with what was checked and changed.
+Nothing in the cluster is installed by hand anymore, Flux applies everything from this repo.
+
+Every app has probes and memory limits, and so does the monitoring stack. I set them from at
+least a week of Prometheus data, not guesses. There are no CPU limits on purpose - the CPU is mostly idle, and limits would only throttle apps during short bursts. Memory is what runs out on this node, so that's where the limits are present in every app.
+
+Alerts go to a Telegram bot. They repeat while a problem lasts, and I get a message when it's
+resolved ([0005](docs/decisions/0005-alerting-telegram.md)). Most of the rules come with
+kube-prometheus-stack; I added my own only for the gaps, like swap, my public endpoints and
+Flux objects that stop being Ready ([0006](docs/decisions/0006-flux-alerts-kube-state-metrics.md)).
+If the whole cluster goes quiet, healthchecks.io notices and tells me
+from outside.
+
+Renovate opens a pull request for every new image or chart version. I read them before
+merging, and for bigger Helm chart upgrades I render the old and the new chart with my own
+values and compare the output first.
+
+When something goes wrong, I write a postmortem. When I make a decision that matters, I
+write it down as an ADR. When a security advisory comes out, I check whether it affects me
+and record what I did in the table at the end.
 
 ## Repository layout
 
-| Path | Contents |
+| Path | What's in it |
 |---|---|
-| `clusters/staging` | Flux entry point: the Kustomizations below and Flux itself (`flux-system`) |
-| `infrastructure/controllers` | Cluster-wide controllers: Renovate, PublicEndpoint operator, Tailscale operator |
-| `monitoring/controllers` | kube-prometheus-stack HelmRelease and its secrets |
-| `monitoring/configs` | Custom alert rules (`PrometheusRule`) |
-| `apps/base` | Base manifests per app |
-| `apps/staging` | Overlays per app: ingress, tunnel, public endpoint check, secrets |
+| `clusters/staging` | Where Flux starts: the Kustomizations below, and Flux itself (`flux-system`) |
+| `infrastructure/controllers` | Renovate, the PublicEndpoint operator and the Tailscale operator |
+| `monitoring/controllers` | The kube-prometheus-stack HelmRelease and its secrets |
+| `monitoring/configs` | My own alert rules |
+| `apps/base` | The base manifests for each app |
+| `apps/staging` | Per app: ingress, tunnel, public endpoint check, secrets |
 | `docs/decisions` | Architecture decision records |
 | `docs/postmortems` | Incident write-ups |
-| `renovate.json` | Renovate configuration |
+| `renovate.json` | Renovate settings |
 
-Flux applies the tree as four Kustomizations, in dependency order:
+Flux applies it as four Kustomizations, in this order:
 
 | Kustomization | Path | Depends on |
 |---|---|---|
@@ -111,7 +121,6 @@ Flux applies the tree as four Kustomizations, in dependency order:
 | `apps` | `apps/staging` | `infrastructure-controllers` |
 | `monitoring-controllers` | `monitoring/controllers/staging` | (waits until its HelmRelease is ready) |
 | `monitoring-configs` | `monitoring/configs/staging` | `monitoring-controllers` |
-
 
 ## Decisions
 
