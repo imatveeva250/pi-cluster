@@ -91,6 +91,9 @@ Flux objects that stop being Ready ([0006](docs/decisions/0006-flux-alerts-kube-
 If the whole cluster goes quiet, healthchecks.io notices and tells me
 from outside.
 
+If GitHub is down, the cluster keeps running the last revision Flux fetched; only changes
+wait until it's back ([2026-11-04](docs/postmortems/2026-11-04-github-outage.md)).
+
 Renovate opens a pull request for every new image or chart version. I read them before
 merging, and for bigger Helm chart upgrades I render the old and the new chart with my own
 values and compare the output first.
