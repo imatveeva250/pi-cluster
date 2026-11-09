@@ -1,0 +1,77 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vaultwarden-backup
+spec:
+  schedule: "30 3 * * *"
+  timeZone: Europe/Amsterdam
+  startingDeadlineSeconds: 3600
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app: vaultwarden-backup
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: backup
+              image: ghcr.io/imatveeva250/pvc-backup:0.1.1
+              env:
+                - name: RESTIC_TAG
+                  value: vaultwarden
+                - name: SQLITE_DBS
+                  value: db.sqlite3
+                - name: EXCLUDES
+                  value: tmp
+                - name: AWS_DEFAULT_REGION
+                  value: auto
+                - name: RESTIC_CACHE_DIR
+                  value: /cache
+                - name: TMPDIR
+                  value: /tmp
+              envFrom:
+                - secretRef:
+                    name: vaultwarden-backup
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 256Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+                - name: stage
+                  mountPath: /stage
+                - name: cache
+                  mountPath: /cache
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: vaultwarden-data-pvc
+            - name: stage
+              emptyDir: {}
+            - name: cache
+              emptyDir: {}
+            - name: tmp
+              emptyDir: {}

@@ -4,3 +4,5 @@ namespace: vaultwarden
 resources:
   - ../../base/vaultwarden
   - ingress.yaml
+  - backup.yaml
+  - backup-credentials.sops.yaml
