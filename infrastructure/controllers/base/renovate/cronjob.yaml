@@ -26,6 +26,7 @@ spec:
                 - imatveeva250/pi-cluster
                 - imatveeva250/cluster-status
                 - imatveeva250/publicendpoint-operator
+                - imatveeva250/pvc-backup
               envFrom:
                 - secretRef:
                     name: renovate-container-env
