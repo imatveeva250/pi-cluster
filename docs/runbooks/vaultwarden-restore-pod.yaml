@@ -1,0 +1,70 @@
+# Restore pod for docs/runbooks/restore-a-pvc.md. Not part of any Flux
+# Kustomization: applied by hand during a restore, deleted afterwards.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vaultwarden-restore
+  namespace: vaultwarden
+  labels:
+    app: vaultwarden-restore
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: restore
+      image: ghcr.io/imatveeva250/pvc-backup:0.1.3
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          set -eu
+          echo "== target before restore (expect empty)"
+          ls -la /data
+          echo "== restore the latest snapshot's /stage into /data"
+          restic restore latest:/stage --tag vaultwarden --target /data
+          echo "== target after restore"
+          ls -la /data
+          echo "== integrity and contents"
+          sqlite3 /data/db.sqlite3 "PRAGMA integrity_check;"
+          sqlite3 /data/db.sqlite3 "SELECT (SELECT count(*) FROM users), count(*), max(updated_at) FROM ciphers;"
+      env:
+        - name: AWS_DEFAULT_REGION
+          value: auto
+        - name: RESTIC_CACHE_DIR
+          value: /cache
+        - name: TMPDIR
+          value: /tmp
+      envFrom:
+        - secretRef:
+            name: vaultwarden-backup
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 256Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: cache
+          mountPath: /cache
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: vaultwarden-data-pvc
+    - name: cache
+      emptyDir: {}
+    - name: tmp
+      emptyDir: {}

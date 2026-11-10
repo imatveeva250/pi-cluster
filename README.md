@@ -94,6 +94,11 @@ from outside.
 If GitHub is down, the cluster keeps running the last revision Flux fetched; only changes
 wait until it's back ([2026-11-04](docs/postmortems/2026-11-04-github-outage.md)).
 
+Vaultwarden is backed up every night to Cloudflare R2 with restic, encrypted before it leaves
+the Pi ([0008](docs/decisions/0008-backups-restic-r2.md)). A backup I never restored is only a hope, so I
+deleted its PVC on purpose and brought it back ([runbook](docs/runbooks/restore-a-pvc.md)). The
+first try failed, and the runbook now has the checks that would have stopped me.
+
 Renovate opens a pull request for every new image or chart version. I read them before
 merging, and for bigger Helm chart upgrades I render the old and the new chart with my own
 values and compare the output first.
@@ -111,9 +116,10 @@ and record what I did in the table at the end.
 | `monitoring/controllers` | The kube-prometheus-stack HelmRelease and its secrets |
 | `monitoring/configs` | My own alert rules |
 | `apps/base` | The base manifests for each app |
-| `apps/staging` | Per app: ingress, tunnel, public endpoint check, secrets |
+| `apps/staging` | Per app: ingress, tunnel, public endpoint check, backup CronJob, secrets |
 | `docs/decisions` | Architecture decision records |
 | `docs/postmortems` | Incident write-ups |
+| `docs/runbooks` | Step-by-step procedures I have tested |
 | `renovate.json` | Renovate settings |
 
 Flux applies it as four Kustomizations, in this order:
@@ -136,6 +142,7 @@ Flux applies it as four Kustomizations, in this order:
 | [0005](docs/decisions/0005-alerting-telegram.md) | Alert delivery through Telegram | Telegram bot, token via SOPS file; Watchdog to healthchecks.io as a dead man's switch |
 | [0006](docs/decisions/0006-flux-alerts-kube-state-metrics.md) | Flux resource alerts through kube-state-metrics | Flux `Ready` conditions as metrics, alert after 15 minutes not Ready |
 | [0007](docs/decisions/0007-tailscale-operator-flux.md) | Manage the Tailscale operator with Flux | Hand-installed release adopted without proxy restarts; OAuth values from SOPS through `valuesFrom` |
+| [0008](docs/decisions/0008-backups-restic-r2.md) | Backups with restic to Cloudflare R2 | Nightly CronJob per app, consistent SQLite copy, encrypted snapshots off-site, healthchecks.io ping; restore tested |
 
 ## Postmortems
 
@@ -143,6 +150,13 @@ Flux applies it as four Kustomizations, in this order:
 |---|---|
 | [2026-10-22](docs/postmortems/2026-10-22-renovate-images.md) | Node disk filled by unpinned Renovate images |
 | [2026-10-22](docs/postmortems/2026-10-22-grafana-stuck-rollout.md) | Grafana rollout stuck for 71 days on a missing Secret key |
+| [2026-11-04](docs/postmortems/2026-11-04-github-outage.md) | Flux could not fetch from GitHub during a GitHub outage |
+
+## Runbooks
+
+| Runbook | When to use it |
+|---|---|
+| [Restore a PVC](docs/runbooks/restore-a-pvc.md) | A PVC is deleted or its data is broken; tested with Vaultwarden on 2026-11-10 |
 
 ## Security advisories
 
