@@ -1,2 +1,5 @@
 age.agekey
 *.agekey
+forgejo-dump*
+*.tar.gz
+*.zip
