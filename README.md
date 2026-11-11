@@ -150,6 +150,7 @@ Flux applies it as four Kustomizations, in this order:
 | [0007](docs/decisions/0007-tailscale-operator-flux.md) | Manage the Tailscale operator with Flux | Hand-installed release adopted without proxy restarts; OAuth values from SOPS through `valuesFrom` |
 | [0008](docs/decisions/0008-backups-restic-r2.md) | Backups with restic to Cloudflare R2 | Nightly CronJob per app, consistent SQLite copy, encrypted snapshots off-site, healthchecks.io ping; restore tested |
 | [0009](docs/decisions/0009-ci-github-actions.md) | Repository checks with GitHub Actions | yamllint, kustomize build and kubeconform on the apps, on every push |
+| [0010](docs/decisions/0010-node-memory-reservations.md) | Reserve node memory and evict before the node starves | Reserved memory for k3s and the system, a memory eviction threshold, `GOMEMLIMIT` for k3s |
 
 ## Postmortems
 
