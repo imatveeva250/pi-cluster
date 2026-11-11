@@ -20,7 +20,7 @@ spec:
         runAsGroup: 1000
 
       containers:
-        - name: vaultwarden
+          name: vaultwarden
           image: vaultwarden/server:1.37.4
           envFrom:
             - configMapRef:
