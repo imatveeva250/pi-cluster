@@ -101,7 +101,7 @@ the Pi ([0008](docs/decisions/0008-backups-restic-r2.md)). A backup I never rest
 deleted its PVC on purpose and brought it back ([runbook](docs/runbooks/restore-a-pvc.md)). The
 first try failed, and the runbook now has the checks that would have stopped me.
 
-My mistakes in YAML (a missing dash, a wrong file name) used to show up only when Flux failed on the live cluster. Now a small script lints the apps and checks them against the Kubernetes schemas. I run it before pushing, and GitHub Actions runs it again on every push ([0009](docs/decisions/0009-ci-github-actions.md)). For now it only covers the apps.
+My mistakes in YAML (a missing dash, a wrong file name) used to show up only when Flux failed on the live cluster. Now a small script lints the apps and checks them against the Kubernetes schemas. It also fails when a secret file was never encrypted. I run it before pushing, and GitHub Actions runs it on every pull request. `main` only accepts changes through a pull request with a green check, because in GitOps merging is deploying ([0009](docs/decisions/0009-ci-github-actions.md)). For now the manifest checks only cover the apps.
 
 Renovate opens a pull request for every new image or chart version. I read them before
 merging, and for bigger Helm chart upgrades I render the old and the new chart with my own
@@ -149,7 +149,7 @@ Flux applies it as four Kustomizations, in this order:
 | [0006](docs/decisions/0006-flux-alerts-kube-state-metrics.md) | Flux resource alerts through kube-state-metrics | Flux `Ready` conditions as metrics, alert after 15 minutes not Ready |
 | [0007](docs/decisions/0007-tailscale-operator-flux.md) | Manage the Tailscale operator with Flux | Hand-installed release adopted without proxy restarts; OAuth values from SOPS through `valuesFrom` |
 | [0008](docs/decisions/0008-backups-restic-r2.md) | Backups with restic to Cloudflare R2 | Nightly CronJob per app, consistent SQLite copy, encrypted snapshots off-site, healthchecks.io ping; restore tested |
-| [0009](docs/decisions/0009-ci-github-actions.md) | Repository checks with GitHub Actions | yamllint, kustomize build and kubeconform on the apps, on every push |
+| [0009](docs/decisions/0009-ci-github-actions.md) | Repository checks with GitHub Actions | yamllint, kustomize build and kubeconform on the apps, secrets encrypted; `main` only through pull requests with a green check |
 | [0010](docs/decisions/0010-node-memory-reservations.md) | Reserve node memory and evict before the node starves | Reserved memory for k3s and the system, a memory eviction threshold, `GOMEMLIMIT` for k3s |
 
 ## Postmortems
