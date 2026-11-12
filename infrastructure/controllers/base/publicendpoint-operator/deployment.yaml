@@ -22,7 +22,7 @@ spec:
 
       containers:
         - name: operator
-          image: ghcr.io/imatveeva250/publicendpoint-operator:0.2.2
+          image: ghcr.io/imatveeva250/publicendpoint-operator:0.2.3
           ports:
             - name: health
               containerPort: 8080
