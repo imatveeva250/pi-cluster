@@ -159,6 +159,7 @@ Flux applies it as four Kustomizations, in this order:
 | [2026-10-22](docs/postmortems/2026-10-22-renovate-images.md) | Node disk filled by unpinned Renovate images |
 | [2026-10-22](docs/postmortems/2026-10-22-grafana-stuck-rollout.md) | Grafana rollout stuck for 71 days on a missing Secret key |
 | [2026-11-04](docs/postmortems/2026-11-04-github-outage.md) | Flux could not fetch from GitHub during a GitHub outage |
+| [2026-11-11](docs/postmortems/2026-11-11-coredns-memory-pressure.md) | CoreDNS restarted and the node went NotReady under memory pressure |
 
 ## Runbooks
 
