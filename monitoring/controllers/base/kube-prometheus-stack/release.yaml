@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: kube-prometheus-stack
-      version: "66.7.1"
+      version: "67.11.0"
       sourceRef:
         kind: HelmRepository
         name: kube-prometheus-stack
@@ -160,3 +160,8 @@ spec:
       enabled: false
     kubeEtcd:
       enabled: false
+    kubelet:
+      serviceMonitor:
+        # The chart's default since 67.x is 10s; 30s keeps Prometheus' memory
+        # and disk where they were on a 4 GB node.
+        cAdvisorInterval: 30s
