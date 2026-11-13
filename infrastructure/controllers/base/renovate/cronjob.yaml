@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
             - name: renovate
-              image: renovate/renovate:44.234.1
+              image: renovate/renovate:44.239.1
               resources:
                 requests:
                   cpu: 50m
