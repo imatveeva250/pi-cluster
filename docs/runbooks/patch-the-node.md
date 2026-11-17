@@ -142,7 +142,26 @@ Check: the node is `Ready` with the new kernel in `KERNEL-VERSION`; no pod outsi
 Completed (pods still starting a minute after boot are fine, run it again); the same pod count
 as in step 3; all Kustomizations and HelmReleases `True`; both sites `200`.
 
-### 9. Deal with the restart alerts (laptop)
+### 9. Remove unused images (Pi)
+
+The kubelet only removes old images above 85% disk use, so every image an update replaced
+stays on disk. On 2026-11-17 that was 12G (30G used before, 18G after): five old Renovate
+versions, old Prometheus, Grafana and audiobookshelf images, and linkding, removed a month
+earlier. Remove every image that no container uses, now that the cluster runs on the new
+ones:
+
+```bash
+df -h /
+sudo k3s crictl --timeout 10m rmi --prune
+df -h /
+```
+
+Check: `df` went down, and on the laptop `kubectl get pods -A | grep -vE 'Running|Completed'`
+still prints only the header. Images of completed Job pods are kept. An image that gets removed
+is downloaded again the next time a pod needs it. The `--timeout` matters: a prune can take
+longer than crictl's default wait, and the client then gives up while containerd keeps going.
+
+### 10. Deal with the restart alerts (laptop)
 
 A reboot restarts every container: each pod keeps its name and age, and its restart count goes
 up by one. `ContainerRestarted` looks at restarts over the last hour, so it would fire for
