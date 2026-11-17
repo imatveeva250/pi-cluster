@@ -152,6 +152,7 @@ Flux applies it as four Kustomizations, in this order:
 | [0009](docs/decisions/0009-ci-github-actions.md) | Repository checks with GitHub Actions | yamllint, kustomize build and kubeconform on the apps, secrets encrypted; `main` only through pull requests with a green check |
 | [0010](docs/decisions/0010-node-memory-reservations.md) | Reserve node memory and evict before the node starves | Reserved memory for k3s and the system, a memory eviction threshold, `GOMEMLIMIT` for k3s |
 | [0011](docs/decisions/0011-renovate-fine-grained-token.md) | A fine-grained GitHub token for Renovate | Token limited to four repositories and the permissions Renovate uses, expires yearly; classic token revoked |
+| [0012](docs/decisions/0012-unattended-upgrades.md) | Automatic Debian updates on the node, reboots stay manual | `unattended-upgrades` with Debian's default origins at 04:30, no automatic reboot; Raspberry Pi packages and the reboot in the monthly patch session |
 
 ## Postmortems
 

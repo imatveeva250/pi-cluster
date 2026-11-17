@@ -8,6 +8,12 @@ desired state is in the API server and in Git, and their data is on PVCs.
 k3s is not an apt package (it was installed with its install script), so this does not
 change the Kubernetes version. Upgrading k3s is a separate task.
 
+Debian updates already install themselves every night at 04:30 with `unattended-upgrades`,
+without a reboot ([0012](../decisions/0012-unattended-upgrades.md)). This session covers the
+rest, about once a month: the kernel, the firmware and the other packages from Raspberry Pi's
+repository (openssl among them), Tailscale, and the reboot that makes all of it take effect.
+`tail /var/log/unattended-upgrades/unattended-upgrades.log` shows what the nightly runs did.
+
 Tested on 2026-11-17: 379 packages after 145 days without a reboot, kernel 6.18.34 to
 6.18.60, openssl 3.5.6 to 3.5.9. The upgrade took about 6 minutes; the cluster was back and
 both public sites answered within a few minutes of the reboot.
