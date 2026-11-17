@@ -166,6 +166,7 @@ Flux applies it as four Kustomizations, in this order:
 
 | Runbook | When to use it |
 |---|---|
+| [Patch the node](docs/runbooks/patch-the-node.md) | Install OS updates and reboot the node; tested on 2026-11-17 (379 packages, new kernel) |
 | [Restore a PVC](docs/runbooks/restore-a-pvc.md) | A PVC is deleted or its data is broken; tested with Vaultwarden on 2026-11-10 |
 
 ## Security advisories
