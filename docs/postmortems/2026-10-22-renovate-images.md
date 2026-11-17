@@ -38,7 +38,8 @@ The investigation, in order:
 - Updates to Renovate's own image now arrive as Renovate pull requests, like any other
   image. The image on the node changes only when such a pull request is merged.
 - Changed the schedule from every hour to every six hours, which also reduced memory
-  pressure on the node.
+  pressure on the node: swap use fell from 917Mi on 21 October to 570Mi the day after
+  the change.
 
 ## Lessons
 
