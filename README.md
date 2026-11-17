@@ -151,6 +151,7 @@ Flux applies it as four Kustomizations, in this order:
 | [0008](docs/decisions/0008-backups-restic-r2.md) | Backups with restic to Cloudflare R2 | Nightly CronJob per app, consistent SQLite copy, encrypted snapshots off-site, healthchecks.io ping; restore tested |
 | [0009](docs/decisions/0009-ci-github-actions.md) | Repository checks with GitHub Actions | yamllint, kustomize build and kubeconform on the apps, secrets encrypted; `main` only through pull requests with a green check |
 | [0010](docs/decisions/0010-node-memory-reservations.md) | Reserve node memory and evict before the node starves | Reserved memory for k3s and the system, a memory eviction threshold, `GOMEMLIMIT` for k3s |
+| [0011](docs/decisions/0011-renovate-fine-grained-token.md) | A fine-grained GitHub token for Renovate | Token limited to four repositories and the permissions Renovate uses, expires yearly; classic token revoked |
 
 ## Postmortems
 
