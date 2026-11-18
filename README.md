@@ -117,6 +117,7 @@ and record what I did in the table at the end.
 |---|---|
 | `clusters/staging` | Where Flux starts: the Kustomizations below, and Flux itself (`flux-system`) |
 | `infrastructure/controllers` | Renovate, the PublicEndpoint operator and the Tailscale operator |
+| `infrastructure/configs` | Objects that use the controllers' CRDs: the default Tailscale ProxyClass |
 | `monitoring/controllers` | The kube-prometheus-stack HelmRelease and its secrets |
 | `monitoring/configs` | My own alert rules |
 | `apps/base` | The base manifests for each app |
@@ -128,11 +129,12 @@ and record what I did in the table at the end.
 | `.github/workflows` | The GitHub Actions workflow that runs `scripts/check.sh` |
 | `renovate.json` | Renovate settings |
 
-Flux applies it as four Kustomizations, in this order:
+Flux applies it as five Kustomizations, in this order:
 
 | Kustomization | Path | Depends on |
 |---|---|---|
-| `infrastructure-controllers` | `infrastructure/controllers/staging` | |
+| `infrastructure-controllers` | `infrastructure/controllers/staging` | (waits until its objects are ready) |
+| `infrastructure-configs` | `infrastructure/configs/staging` | `infrastructure-controllers` |
 | `apps` | `apps/staging` | `infrastructure-controllers` |
 | `monitoring-controllers` | `monitoring/controllers/staging` | (waits until its HelmRelease is ready) |
 | `monitoring-configs` | `monitoring/configs/staging` | `monitoring-controllers` |
@@ -153,6 +155,7 @@ Flux applies it as four Kustomizations, in this order:
 | [0010](docs/decisions/0010-node-memory-reservations.md) | Reserve node memory and evict before the node starves | Reserved memory for k3s and the system, a memory eviction threshold, `GOMEMLIMIT` for k3s |
 | [0011](docs/decisions/0011-renovate-fine-grained-token.md) | A fine-grained GitHub token for Renovate | Token limited to four repositories and the permissions Renovate uses, expires yearly; classic token revoked |
 | [0012](docs/decisions/0012-unattended-upgrades.md) | Automatic Debian updates on the node, reboots stay manual | `unattended-upgrades` with Debian's default origins at 04:30, no automatic reboot; Raspberry Pi packages and the reboot in the monthly patch session |
+| [0013](docs/decisions/0013-tailscale-resources-infrastructure-configs.md) | Tailscale resources through a default ProxyClass, in a separate configs layer | Operator resources in plain HelmRelease values, proxy resources in a default ProxyClass; new `infrastructure-configs` Kustomization after the controllers |
 
 ## Postmortems
 
