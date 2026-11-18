@@ -31,3 +31,5 @@ spec:
           memory: 48Mi
         limits:
           memory: 128Mi
+    proxyConfig:
+      defaultProxyClass: default
