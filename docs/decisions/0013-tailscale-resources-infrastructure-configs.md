@@ -6,7 +6,7 @@ Accepted (2026-11-18)
 
 ## Context
 
-Since [0007](0007-tailscale-operator-flux.md) Flux manages the Tailscale operator, but the operator and its four proxy pods (one per Tailscale Ingress: audiobookshelf, Forgejo, Grafana, Vaultwarden) had no resource requests or limits. Every other pod I control has them since step 2 of the roadmap. On a 4 GB node, pods without requests are the ones the scheduler and the eviction logic know least about.
+Since [0007](0007-tailscale-operator-flux.md) Flux manages the Tailscale operator, but the operator and its four proxy pods (one per Tailscale Ingress: audiobookshelf, Forgejo, Grafana, Vaultwarden) had no resource requests or limits. Every other pod I control has them. On a 4 GB node, pods without requests are the ones the scheduler and the eviction logic know least about.
 
 Measured over 7 days before the change: the operator peaked at 58 MiB (37 MiB normally), the proxies at 42 MiB (21 to 23 MiB normally).
 
