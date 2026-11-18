@@ -33,5 +33,5 @@ Flux manages the operator through a HelmRepository and a HelmRelease in `infrast
 - Deleting the HelmRelease from Git would uninstall the operator, and deleting the namespace would remove every proxy's device state.
 - The OAuth credentials now exist in two places: encrypted in Git, and in the cluster.
 - Device state still lives in Secrets that the operator writes, not in Git. A rebuild needs the old devices removed in the Tailscale admin console first, or the new proxies get suffixed names.
-- The operator and its proxies have no resource requests or limits.
+- The operator and its proxies had no resource requests or limits at first. Since 2026-11-18 they do: see [0013](0013-tailscale-resources-infrastructure-configs.md).
 - Alternatives: keeping the Helm CLI (the problems above remain), or committing `helm template` output as plain manifests (chart upgrades become manual re-renders, and Renovate cannot follow them).
