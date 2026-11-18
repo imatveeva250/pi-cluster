@@ -59,6 +59,10 @@ spec:
             memory: 104Mi
           limits:
             memory: 160Mi
+        dashboards:
+          resource: configmap
+        datasources:
+          resource: configmap
     alertmanager:
       alertmanagerSpec:
         secrets:
