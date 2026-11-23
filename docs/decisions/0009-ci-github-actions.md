@@ -24,6 +24,7 @@ I start small, with the apps (`apps/staging`), where I change things most often:
 - **kustomize build** of `apps/staging`, which fails on a missing or misspelled file in a `kustomization.yaml`.
 - **kubeconform** in strict mode on the rendered output, against the Kubernetes 1.35.5 schemas (the cluster's version). Secrets are skipped because SOPS adds fields the schema doesn't know, and `PublicEndpoint` because it is my own CRD.
 - **Secrets encrypted**, for the whole repository, not only `apps/`: every tracked `*.sops.yaml` file (except the SOPS config `.sops.yaml`) must contain the `sops:` block that SOPS adds when it encrypts a file.
+- **No plaintext values in secrets**: in those same files, every value under `data` and `stringData` must start with `ENC[`, the form SOPS writes. This catches a value added by hand to a file that was encrypted before: the `sops:` block stays, so the first check alone can't see it. The check uses yq, which CI installs at a pinned version like the other tools.
 
 Tool versions are pinned in the workflow; each run installs them on a fresh runner.
 
@@ -31,7 +32,8 @@ Tool versions are pinned in the workflow; each run installs them on a fresh runn
 
 - I tested it on a copy of the repository. A missing dash and a misspelled file name in a `kustomization.yaml` turn it red.
 - A secret file that was never encrypted turns it red too (tested with an unencrypted copy of a manifest named `*.sops.yaml`).
-- Not caught yet: a YAML file that exists but is not listed in its `kustomization.yaml`, an app removed from `apps/staging/kustomization.yaml`, and a single plaintext value added to a file that is otherwise encrypted. The infrastructure and monitoring manifests are not linted or validated yet either. The gate is only as good as what it checks.
+- A plaintext value in a file that has a `sops:` block turns it red as well (tested with a fake `*.sops.yaml` holding one plain value).
+- Not caught yet: a YAML file that exists but is not listed in its `kustomization.yaml`, and an app removed from `apps/staging/kustomization.yaml`. The infrastructure and monitoring manifests are not linted or validated yet either. The gate is only as good as what it checks.
 - kubeconform checks structure, not meaning. A wrong port or a value copied from another app still passes, as long as it has the right type.
 - Nothing runs in the cluster, so CI costs no memory on the node. CI depends on GitHub, which Flux already depends on.
 - A red check now blocks the merge, so a broken change can't reach Flux. Every change, mine and Renovate's, goes through a pull request; `gh pr merge --squash --auto` merges it as soon as the check is green.

@@ -101,7 +101,7 @@ the Pi ([0008](docs/decisions/0008-backups-restic-r2.md)). A backup I never rest
 deleted its PVC on purpose and brought it back ([runbook](docs/runbooks/restore-a-pvc.md)). The
 first try failed, and the runbook now has the checks that would have stopped me.
 
-My mistakes in YAML (a missing dash, a wrong file name) used to show up only when Flux failed on the live cluster. Now a small script lints the apps and checks them against the Kubernetes schemas. It also fails when a secret file was never encrypted. I run it before pushing, and GitHub Actions runs it on every pull request. `main` only accepts changes through a pull request with a green check, because in GitOps merging is deploying ([0009](docs/decisions/0009-ci-github-actions.md)). For now the manifest checks only cover the apps.
+My mistakes in YAML (a missing dash, a wrong file name) used to show up only when Flux failed on the live cluster. Now a small script lints the apps and checks them against the Kubernetes schemas. It also fails when a secret file was never encrypted, or holds a value that isn't encrypted. I run it before pushing, and GitHub Actions runs it on every pull request. `main` only accepts changes through a pull request with a green check, because in GitOps merging is deploying ([0009](docs/decisions/0009-ci-github-actions.md)). For now the manifest checks only cover the apps.
 
 Renovate opens a pull request for every new image or chart version. I read them before
 merging, and for bigger Helm chart upgrades I render the old and the new chart with my own
