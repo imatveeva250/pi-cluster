@@ -63,8 +63,10 @@ Tailscale operator.
   fixed numbers.
 - audiobookshelf, an audiobook server. Public through a tunnel, and also on the tailnet.
 - Vaultwarden, my password manager. Tailnet only.
-- Forgejo, a Git server. Tailnet only. It's empty for now: I'm keeping it for running CI
-  inside the cluster later.
+- Forgejo, a Git server. Tailnet only. It has no repositories: CI runs on GitHub Actions
+  instead ([0009](docs/decisions/0009-ci-github-actions.md)), because a runner needs memory
+  this node doesn't have. I keep it as a stateful app to practise upgrades on; it gets a
+  backup as soon as it holds something ([0008](docs/decisions/0008-backups-restic-r2.md)).
 - Grafana, for dashboards. Tailnet only.
 
 The platform underneath: k3s with Traefik, ServiceLB and its built-in Helm controller turned

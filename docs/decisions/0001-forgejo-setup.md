@@ -100,3 +100,4 @@ unused and pointed to a config location that does not exist.
 - Resource requests and limits are set from the first deployment and tuned from Grafana
   data afterwards.
 - Backing up the `data` directory covers repositories, database and configuration.
+- In-cluster CI was not chosen: CI runs on GitHub Actions ([0009](0009-ci-github-actions.md)), so Forgejo has no repositories yet.
