@@ -82,6 +82,7 @@ for finalizers would also allow changes to spec; the operator does not make them
 
 - Each public endpoint is checked through the same path a visitor uses, including the tunnel.
 - If the operator is down, statuses stop updating; `lastChecked` shows how old a result is.
+- The operator reaches the API server by IP, not by DNS name (since 0.2.2, after the [2026-11-11 incident](../postmortems/2026-11-11-coredns-memory-pressure.md)), so it keeps working when cluster DNS is gone. Tested on 2026-11-24 by scaling CoreDNS to 0 for 4 minutes: the URL checks failed with a DNS error, as they should, the status updates kept landing, and both checks were reachable again within 25 seconds of DNS coming back, without restarting the operator.
 - Deleting a `PublicEndpoint`, or a namespace containing one, waits for the operator. If the
   operator is permanently gone, the finalizer has to be removed by hand.
 - One more image to release and keep up to date.
