@@ -157,3 +157,86 @@ To see that a backup can be restored without stopping anything, run a pod like t
 above with an `emptyDir` as the target instead of the PVC, and compare the restored
 database with the live one (users, items, newest change, `rsa_key.pem` hash). I did this
 before the drill; it changes nothing.
+
+## Restore without the cluster
+
+Use this when the Pi or the cluster is gone, or to prove that the backups don't depend on
+them. Everything runs on the laptop, and nothing touches the cluster. The restored files
+land in `/dev/shm` (RAM, gone at the next reboot), because `rsa_key.pem` comes out
+unencrypted. `--no-cache` keeps restic from leaving a cache in `~/.cache/restic`.
+
+Tested on 2026-11-24 for Vaultwarden. It took about 25 minutes, most of it spent working
+out the repository URL, which the outside copy didn't hold yet. With the URL at hand it is a
+5-minute job.
+
+You need, all from the copy kept outside the laptop and the cluster: the R2 access key ID
+and secret key, the restic password, and the full repository URL
+(`s3:https://<account-id>.eu.r2.cloudflarestorage.com/pi-cluster-backups/vaultwarden`).
+
+1. Install the tools and check the version (the repository is format 2, which restic 0.14
+   and newer can read):
+
+   ```
+   sudo pacman -S --needed restic sqlite
+   restic version
+   ```
+
+2. Open a new terminal tab, so the variables die with it. Enter the values; nothing is shown
+   and nothing goes into the shell history. Check them by length only, none may be `0`:
+
+   ```
+   read -rsp "AWS_ACCESS_KEY_ID: " AWS_ACCESS_KEY_ID; echo
+   read -rsp "AWS_SECRET_ACCESS_KEY: " AWS_SECRET_ACCESS_KEY; echo
+   read -rsp "RESTIC_REPOSITORY: " RESTIC_REPOSITORY; echo
+   read -rsp "RESTIC_PASSWORD: " RESTIC_PASSWORD; echo
+   export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY RESTIC_REPOSITORY RESTIC_PASSWORD AWS_DEFAULT_REGION=auto
+   echo "${#AWS_ACCESS_KEY_ID} ${#AWS_SECRET_ACCESS_KEY} ${#RESTIC_REPOSITORY} ${#RESTIC_PASSWORD}"
+   ```
+
+3. List the snapshots. Check: the newest one is from 03:30 today.
+
+   ```
+   restic --no-cache snapshots --host veneticapi
+   ```
+
+4. Restore the newest snapshot. The backup job stages the files in `/stage`, so that is the
+   folder to take from the snapshot. Check: `db.sqlite3` and `rsa_key.pem` are there, with no
+   `-wal` or `-shm` files and no `tmp/`.
+
+   ```
+   restic --no-cache restore latest:/stage --host veneticapi --tag vaultwarden --target /dev/shm/vw-restore
+   ls -la /dev/shm/vw-restore
+   ```
+
+5. Check the database. Check: `ok`, then the expected number of users and items and a
+   recent newest change.
+
+   ```
+   sqlite3 /dev/shm/vw-restore/db.sqlite3 'PRAGMA integrity_check;'
+   sqlite3 /dev/shm/vw-restore/db.sqlite3 'SELECT (SELECT count(*) FROM users), (SELECT count(*) FROM ciphers), (SELECT max(updated_at) FROM ciphers);'
+   ```
+
+6. Check the repository. Check: `no errors were found`.
+
+   ```
+   restic --no-cache check
+   ```
+
+7. Clean up, then close the tab:
+
+   ```
+   shred -u /dev/shm/vw-restore/* && rmdir /dev/shm/vw-restore
+   unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY RESTIC_REPOSITORY RESTIC_PASSWORD AWS_DEFAULT_REGION
+   ```
+
+What the repository URL errors mean (I hit all of them on 2026-11-24):
+
+- `parsing repository location failed: invalid backend`: the `s3:` prefix is missing.
+- `does not follow ip address or domain name standards`: the host part is broken, for
+  example `https://` twice or a pasted space.
+- `tls: handshake failure`: Cloudflare doesn't know the host name, usually because the ID in
+  it is not the account ID. The R2 access key ID is also 32 hex characters. The account ID is
+  the part after `dash.cloudflare.com/` in the dashboard's address bar.
+- `repository does not exist ... The specified key does not exist`: R2 answered, but there is
+  no repository at that path. The bucket is in the EU jurisdiction, so the host needs `.eu.`
+  before `r2`; then check the folder name after the bucket.
